@@ -1,0 +1,5254 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_NOOR2",
+      "label": "noor2",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "postgres",
+      "pluginName": "PostgreSQL"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.3.2"
+    },
+    {
+      "type": "panel",
+      "id": "natel-plotly-panel",
+      "name": "Plotly",
+      "version": "0.0.7"
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Home",
+      "tooltip": "",
+      "type": "link",
+      "url": "d/f0d046b9-0d10-40a1-b774-b04a95b55b09/home-noor-ii"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sector"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 129
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Loop Name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "",
+                    "url": "d/jHrpXyoSz/sca-details?var-sca_name=${__data.fields[\"LOOP Name\"]}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 18,
+        "x": 0,
+        "y": 0
+      },
+      "id": 58,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  1 as \"join\",\n  sb.subfield_name,\n  ss.name as sector_name,\n  ls.name,\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td \n  inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join sca_sensors sca on ls.loop_id = sca.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and sca4_temp > 300 and sca_position = 4\norder by sca4_temp asc limit 10",
+          "refId": "values",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  1 as \"join\",\n  avg(sca4_temp) as average,\n--  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n--  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n--  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\nWHERE\n  test_id = $test_id and sca4_temp > 300 \n) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Coldest LOOPs",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "diff_average",
+            "binary": {
+              "left": "sca4_temp",
+              "operator": "-",
+              "reducer": "sum",
+              "right": "average"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "diff_p50-5",
+            "binary": {
+              "left": "sca4_temp",
+              "operator": "-",
+              "reducer": "sum",
+              "right": "P50-5"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "diff_p10",
+            "binary": {
+              "left": "sca4_temp",
+              "operator": "-",
+              "reducer": "sum",
+              "right": "P10"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "P10": true,
+              "P50-5": true,
+              "average": true,
+              "join": true
+            },
+            "indexByName": {
+              "P10": 7,
+              "P50-5": 6,
+              "average": 5,
+              "diff_average": 8,
+              "diff_p10": 10,
+              "diff_p50-5": 9,
+              "join": 0,
+              "name": 3,
+              "sca4_temp": 4,
+              "sector_name": 1,
+              "subfield_name": 2
+            },
+            "renameByName": {
+              "diff_average": "Diff mean",
+              "diff_p10": "Diff P10",
+              "diff_p50-5": "Diff P50-5",
+              "name": "Loop Name",
+              "sca4_temp": "SCA #4 Temperature",
+              "sca_name": "SCA Name",
+              "sector_name": "Sector",
+              "subfield_name": "Subfield"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "links": [
+            {
+              "title": "",
+              "url": "d/jHrpXyoSz/sca-details?var-sca_name=${__data.fields[\"Loop\"]}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SCA"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sector"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 74
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 60,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select\n\tsubfield_name,\n\tsector_name,\n\tname\nfrom (\n\tselect\n\t  sb.subfield_name,\n\t  ss.name as sector_name,\n\t  ls.name,\n\t  sca4_temp\n\tFROM\n\t  temperature_dt_scas_daily td \n\t  inner join loop_sensors ls on td.loop_id = ls.loop_id\n\t  inner join sca_sensors sca on ls.loop_id = sca.loop_id\n\t  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\tWHERE\n\t  sca4_temp > 300 and sca_position = 4 and \n\t  test_id in (select distinct(test_id)\n\t\t\tfrom temperature_dt_scas_test tdst \n\t\t\tinner join temperature_dt_scas_daily td on tdst.id = td.test_id\n\t\t\twhere test_id <= $test_id\n\t\t\torder by test_id desc limit 3)\n\torder by sca4_temp asc limit 30) s1\ngroup by subfield_name, sector_name, name HAVING count(name) >= 3 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Recurrently cold LOOPs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "sca_name": 2,
+              "sector_name": 0,
+              "subfield_name": 1
+            },
+            "renameByName": {
+              "name": "Loop",
+              "sca_name": "SCA",
+              "sector_name": "Sector",
+              "subfield_name": "Subfield"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 0,
+        "y": 12
+      },
+      "id": 41,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'NNW'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "NNW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 2,
+        "y": 12
+      },
+      "id": 62,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNW' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNW' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector NNW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 12,
+        "y": 12
+      },
+      "id": 63,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNE' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NNE' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector NNE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 22,
+        "y": 12
+      },
+      "id": 44,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'NNE'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "NNE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 0,
+        "y": 23
+      },
+      "id": 46,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'NW'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "NW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 2,
+        "y": 23
+      },
+      "id": 64,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NW' and sca_position = 4\n\t\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NW' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector NW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 12,
+        "y": 23
+      },
+      "id": 65,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NE' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'NE' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector NE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 22,
+        "y": 23
+      },
+      "id": 47,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'NE'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "NE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 0,
+        "y": 34
+      },
+      "id": 48,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'SW'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "SW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 2,
+        "y": 34
+      },
+      "id": 66,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SW' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SW' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector SW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 12,
+        "y": 34
+      },
+      "id": 67,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SE' and sca_position = 4\n\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SE' and sca_position = 4\n\t\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector SE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 22,
+        "y": 34
+      },
+      "id": 51,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'SE'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "SE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 0,
+        "y": 45
+      },
+      "id": 50,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'SSW'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "SSW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 2,
+        "y": 45
+      },
+      "id": 68,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSW' and sca_position = 4\n\t\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSW' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSW' and sca_position = 4\n\t\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector SSW",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 12,
+        "y": 45
+      },
+      "id": 69,
+      "pconfig": {
+        "fixScale": "",
+        "layout": {
+          "dragmode": "lasso",
+          "font": {
+            "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+          },
+          "hovermode": "closest",
+          "legend": {
+            "orientation": "h"
+          },
+          "showlegend": true,
+          "xaxis": {
+            "rangemode": "normal",
+            "showgrid": false,
+            "type": "auto",
+            "zeroline": false
+          },
+          "yaxis": {
+            "range": [
+              330,
+              390
+            ],
+            "rangemode": "between",
+            "showgrid": false,
+            "title": "Temperature",
+            "type": "linear",
+            "zeroline": false
+          },
+          "zaxis": {
+            "rangemode": "normal",
+            "showgrid": true,
+            "type": "linear",
+            "zeroline": false
+          }
+        },
+        "loadFromCDN": false,
+        "settings": {
+          "displayModeBar": false,
+          "type": "scatter"
+        },
+        "showAnnotations": true,
+        "traces": [
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "regular"
+            },
+            "name": "SCA#4",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#33B5E5",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 5,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "outlier"
+            },
+            "name": "outliers",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#005f81",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 6
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "markers": true
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P90"
+            },
+            "name": "P90",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50+5"
+            },
+            "name": "P50+5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50"
+            },
+            "name": "P50",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 1
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P50-5"
+            },
+            "name": "P50-5º",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#E02F44",
+                "dash": "dot",
+                "shape": "linear",
+                "width": 3
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          },
+          {
+            "mapping": {
+              "color": "join",
+              "text": "sca_name",
+              "x": "id",
+              "y": "P10"
+            },
+            "name": "P10",
+            "settings": {
+              "color_option": "solid",
+              "line": {
+                "color": "#3274D9",
+                "dash": "solid",
+                "shape": "linear",
+                "width": 2
+              },
+              "marker": {
+                "color": "#E02F44",
+                "colorscale": "YlOrRd",
+                "line": {
+                  "color": "#DDD",
+                  "width": 0
+                },
+                "showscale": false,
+                "size": 10,
+                "sizemin": 3,
+                "sizemode": "diameter",
+                "sizeref": 0.2,
+                "symbol": "circle"
+              },
+              "textposition": "top"
+            },
+            "show": {
+              "line": true,
+              "lines": true,
+              "markers": false
+            }
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSE' and sca_position = 4\n\t\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as outlier\nfrom data\nwhere data.sca4_temp <= data.\"P50-5\")",
+          "refId": "outliers",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with data as(\n\tSELECT\n\t    row_number() OVER () AS id,\n\t\tname.sca_name,\n\t  \tname.sca4_temp,\n\t  \tpercen.\"P90\",\n\t  \tpercen.\"P50+5\",\n\t  \tpercen.\"P50\",\n\t\tpercen.\"P50-5\",\n\t\tpercen.\"P10\"\n\tfrom (SELECT\n\t\t  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n\t\t  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\",\n\t\t  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\"\n\t\tFROM\n\t\t(SELECT\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on td.loop_id = sca.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSE' and sca_position = 4\n\t\t) s1) percen,\n\t\t(select\n\t\t  sca.subfield_id,\n\t\t  sca_name,\n\t\t  sca4_temp\n\t\tFROM\n\t\t  temperature_dt_scas_daily td \n\t\t  inner join sca_sensors sca on sca.loop_id = td.loop_id\n\t\t  inner join subfield_sensors sb on sca.subfield_id = sb.subfield_id\n\t\t  inner join sector_sensors ss on sb.sector_id = ss.sector_id\n\t\tWHERE\n\t\t  test_id = $test_id and ss.name = 'SSE' and sca_position = 4\n\t\t\torder by sca_name asc\n\t\t) name\n)\n(select \n  1 as \"join\",\n\tdata.id,\n\tdata.sca_name,\n\tsca4_temp as regular,\n\t\"P90\",\n\t\"P50+5\",\n\t\"P50\",\n\t\"P50-5\",\n\t\"P10\"\nfrom data\nwhere data.sca4_temp > data.\"P50-5\")",
+          "refId": "regular",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Sector SSE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "natel-plotly-panel",
+      "version": 1
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_NOOR2}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P90"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50+5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P50-5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 2,
+        "x": 22,
+        "y": 45
+      },
+      "id": 49,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_NOOR2}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  percentile_disc(0.50) within group (order by sca4_temp)+5 as \"P50+5\",\n  percentile_disc(0.90) within group (order by sca4_temp)   as \"P90\",\n  percentile_disc(0.50) within group (order by sca4_temp)   as \"P50\",\n  percentile_disc(0.10) within group (order by sca4_temp)   as \"P10\",\n  percentile_disc(0.50) within group (order by sca4_temp)-5 as \"P50-5\"\nFROM\n(SELECT\n  sca4_temp\nFROM\n  temperature_dt_scas_daily td inner join loop_sensors ls on td.loop_id = ls.loop_id\n  inner join subfield_sensors sb on ls.subfield_id = sb.subfield_id\n  inner join sector_sensors ss on sb.sector_id = ss.sector_id\nWHERE\n  test_id = $test_id and ss.name = 'SSE'\n ) s1",
+          "refId": "percentile",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "SSE",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        }
+      ],
+      "type": "bargauge"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select to_char(timestamp,  'YYYY/MM/DD')\nfrom temperature_dt_scas_test \nwhere status LIKE '%done%'\norder by 1 desc",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Date",
+        "multi": false,
+        "name": "test_date",
+        "options": [],
+        "query": "select to_char(timestamp,  'YYYY/MM/DD')\nfrom temperature_dt_scas_test \nwhere status LIKE '%done%'\norder by 1 desc",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 2,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select id from temperature_dt_scas_test where to_char(timestamp, 'YYYY/MM/DD') = ${test_date:singlequote} ",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "test_id",
+        "options": [],
+        "query": "select id from temperature_dt_scas_test where to_char(timestamp, 'YYYY/MM/DD') = ${test_date:singlequote} ",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 4,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select \nconcat(to_char(timestamp, 'YYYY/DD/MM HH:MM'), ' -> ', status)\nfrom temperature_dt_scas_test where id = $test_id",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "test_status",
+        "options": [],
+        "query": "select \nconcat(to_char(timestamp, 'YYYY/DD/MM HH:MM'), ' -> ', status)\nfrom temperature_dt_scas_test where id = $test_id",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "SELECT  DATE_PART('day', now()::timestamp - ${test_date:singlequote}::timestamp) as step",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "step",
+        "options": [],
+        "query": "SELECT  DATE_PART('day', now()::timestamp - ${test_date:singlequote}::timestamp) as step",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select EXTRACT(EPOCH from  timestamp )*1000  - 4200000 from temperature_dt_scas_test where to_char(timestamp, 'YYYY/MM/DD') = ${test_date:singlequote} ",
+        "description": "",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "t_from_temp",
+        "options": [],
+        "query": "select EXTRACT(EPOCH from  timestamp )*1000  - 4200000 from temperature_dt_scas_test where to_char(timestamp, 'YYYY/MM/DD') = ${test_date:singlequote} ",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select $t_from_temp + 600000;",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "t_to_temp",
+        "options": [],
+        "query": "select $t_from_temp + 600000;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select EXTRACT(EPOCH from DATE_TRUNC('day', timestamp ))*1000  from temperature_dt_scas_test where to_char(timestamp, 'YYYY/MM/DD') = ${test_date:singlequote} order by timestamp desc;",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "t_from",
+        "options": [],
+        "query": "select EXTRACT(EPOCH from DATE_TRUNC('day', timestamp ))*1000  from temperature_dt_scas_test where to_char(timestamp, 'YYYY/MM/DD') = ${test_date:singlequote} order by timestamp desc;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_NOOR2}"
+        },
+        "definition": "select $t_from + 86400000;",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "t_to",
+        "options": [],
+        "query": "select $t_from + 86400000;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now/d",
+    "to": "now/d"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "",
+  "title": "T4 temperature check midday",
+  "uid": "7OvLnYoSk",
+  "version": 42,
+  "weekStart": ""
+}

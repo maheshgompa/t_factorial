@@ -1,0 +1,1251 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 15,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Previous day",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/admaip8o6d1q8d/ullage?var-Date=$previous_day"
+    },
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Next day",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/admaip8o6d1q8d/ullage?var-Date=$next_day"
+    },
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Home",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/admaip8o6d1q8d/ullage?orgId=1"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    o.timestamp,\r\n    o.r1qja10aa001,\r\n    o.r1qja12aa001,\r\n    r.value AS r1qja80cl001\r\nFROM\r\n    (\r\n        SELECT\r\n            \"timestamp\",\r\n            r1qja10aa001,\r\n            r1qja12aa001\r\n        FROM\r\n            ullage_operation\r\n    ) AS o\r\nLEFT JOIN\r\n    (\r\n        SELECT\r\n            \"timestamp\",\r\n            value\r\n        FROM\r\n            ullage_raw_measurement\r\n        WHERE\r\n            sensor_id = 16\r\n    ) AS r\r\nON o.timestamp = r.\"timestamp\"\r\nWHERE\r\n    o.timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nORDER BY\r\n    o.\"timestamp\";",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    t1.\"timestamp\",\r\n    t1.value AS \"r1qja78cp001\",\r\n    t2.value AS \"r1je_20cp901\"\r\nFROM\r\n    (\r\n        SELECT \"timestamp\",  value\r\n        FROM ullage_raw_measurement\r\n        WHERE sensor_id = 7\r\n       \r\n    ) AS t1\r\nLEFT JOIN\r\n    (\r\n        SELECT \"timestamp\",  value\r\n        FROM ullage_raw_measurement\r\n        WHERE sensor_id = 19\r\n       \r\n    ) AS t2\r\nON t1.\"timestamp\" = t2.\"timestamp\"\r\n-- where SUBSTRING(t1.timestamp::text, 1, 10) IN ( $Date )\r\nwhere \r\n    t1.timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\n\r\nORDER BY t1.\"timestamp\";",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "ullage_operation_time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 5,
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH on_off_times AS (\r\n    SELECT\r\n        timestamp,\r\n        operation,\r\n        LAG(timestamp) OVER (ORDER BY timestamp) AS prev_timestamp,\r\n        LAG(operation) OVER (ORDER BY timestamp) AS prev_operation,\r\n        DATE_TRUNC('day', timestamp) AS day_timestamp -- Truncate timestamp to day level\r\n    FROM ullage_operation\r\n    WHERE operation IN ('ON', 'OFF') -- Assuming 'ON' and 'OFF' are valid operation values\r\n\r\n)\r\nSELECT\r\n     TO_CHAR(day_timestamp::date, 'DD-MM-YYYY') AS day, -- Format date as '01-02-2024'\r\n\tsum(case when TO_CHAR(timestamp::date, 'DD-MM-YYYY') =TO_CHAR(prev_timestamp::date, 'DD-MM-YYYY') then (EXTRACT(EPOCH FROM (timestamp - prev_timestamp)))/3600\r\n\telse 0\r\n\tend) as duration\r\nFROM on_off_times\r\nWHERE operation = 'ON'  \r\n      AND timestamp >= '$Date'::date - INTERVAL '30 days' -- Last 30 days filter\r\n      AND timestamp <= '$Date'::date + INTERVAL '1 days'-- Reference date filter\r\nGROUP BY day_timestamp::date\r\nORDER BY day_timestamp::date;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "A bar trend with the last 30 days of ullage_operation ON ",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "oper"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 1,
+                        "text": "OFF"
+                      },
+                      "1": {
+                        "color": "light-green",
+                        "index": 0,
+                        "text": "ON"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT timestamp, r1qja10aa001,r1qja12aa001,r1qja78cp001,\r\n case when operation = 'ON' then 1 else 0 end as Oper\r\nFROM ullage_operation\r\nwhere \r\n    timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nORDER BY timestamp;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\",\r\n       MAX(CASE WHEN sensor_id = 1 THEN value END) AS R1QJA78CT001,\r\n       MAX(CASE WHEN sensor_id = 2 THEN value END) AS R1QJA78CT002,\r\n       MAX(CASE WHEN sensor_id = 5 THEN value END) AS R1QJA80CT001,\r\n       MAX(CASE WHEN sensor_id = 6 THEN value END) AS R1QJA82CT001\r\nFROM ullage_raw_measurement\r\nWHERE sensor_id IN (1, 2, 5, 6) AND  \r\n       timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nGROUP BY \"timestamp\"\r\nORDER BY \"timestamp\";",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Temperature follow up",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "oper"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 1,
+                        "text": "OFF"
+                      },
+                      "1": {
+                        "color": "light-green",
+                        "index": 0,
+                        "text": "ON"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT timestamp, r1qja10aa001,r1qja12aa001,r1qja78cp001,\r\n case when operation = 'ON' then 1 else 0 end as Oper\r\n \r\nFROM ullage_operation\r\nwhere \r\n    timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nORDER BY timestamp;\r\n\r\n\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "\r\nSELECT \"timestamp\", value as R1QJA78CQ001 \r\nFROM \r\n    ullage_raw_measurement \r\nWHERE \r\n      sensor_id =17 AND \r\n      timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\norder by \r\n    timestamp",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "VOC values",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 40000,
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH TemperatureData AS (\r\n    SELECT timestamp, value AS temperature_value\r\n    FROM ullage_raw_measurement\r\n    WHERE sensor_id = 5 -- R1QJA80CT001\r\n),\r\nFlowData AS (\r\n    SELECT timestamp, value AS flow_value\r\n    FROM ullage_raw_measurement\r\n    WHERE sensor_id = 18 -- R1JE_40CF001\r\n),\r\nCalculations AS (\r\n    SELECT\r\n        t.timestamp,\r\n        f.flow_value AS \"R1JE_40CF001\",\r\n        t.temperature_value AS \"R1QJA80CT001\",\r\n        1065.05375654492 - 0.595426707667444 * t.temperature_value - 0.000893338489101383 * (t.temperature_value * t.temperature_value) AS htf_density,\r\n        f.flow_value * (1065.05375654492 - 0.595426707667444 * t.temperature_value - 0.000893338489101383 * (t.temperature_value * t.temperature_value)) * 10/3600 AS \"Recovered_mass_ton\"\r\n    FROM\r\n        FlowData f\r\n    JOIN\r\n        TemperatureData t ON t.timestamp = f.timestamp\r\n)\r\nSELECT\r\n    -- timestamp::date AS date_1,\r\n    TO_CHAR(timestamp::date, 'YYYY-MM-DD') AS date_1,\r\n    SUM(\"Recovered_mass_ton\") AS cumulative_recovered_mass_ton\r\nFROM\r\n    Calculations\r\nWHERE\r\n    timestamp >= '$Date'::date - INTERVAL '60 days' -- Last 60 days filter\r\n    AND timestamp <= '$Date'::date + INTERVAL '1 days'-- Reference date filter\r\nGROUP BY\r\n    timestamp::date\r\nORDER BY\r\n    timestamp::date;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "HTF Recovered mass",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-green",
+            "mode": "shades"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH formatted_dates AS (\r\n    SELECT\r\n        DATE(alarm_start) AS alarm_date,\r\n        COUNT(*) AS total_alarms,\r\n        SUM(CASE WHEN uad.name IN ('HH', 'LL') THEN 1 ELSE 0 END) AS critical_alarms\r\n    FROM\r\n        ullage_alarm_record uar\r\n    JOIN\r\n        ullage_alarm_definition uad ON uar.alarm_definition_id = uad.id\r\n    GROUP BY\r\n        DATE(alarm_start)\r\n)\r\nSELECT\r\n    TO_CHAR(alarm_date, 'YYYY/MM/DD') AS alarm_date,\r\n    total_alarms\r\nFROM\r\n    formatted_dates\r\nWHERE\r\n    alarm_date = ${Date:singlequote}::timestamp \r\nORDER BY\r\n    alarm_date;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Total alarms per day",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-green",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 26
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH formatted_dates AS (\r\n    SELECT\r\n        DATE(alarm_start) AS alarm_date,\r\n        COUNT(*) AS total_alarms,\r\n        SUM(CASE WHEN uad.name IN ('HH', 'LL') THEN 1 ELSE 0 END) AS critical_alarms\r\n    FROM\r\n        ullage_alarm_record uar\r\n    JOIN\r\n        ullage_alarm_definition uad ON uar.alarm_definition_id = uad.id\r\n    -- WHERE\r\n    --     alarm_start >= $__timeFrom() AND alarm_start <= $__timeTo()  -- Apply time range filter\r\n    GROUP BY\r\n        DATE(alarm_start)\r\n)\r\nSELECT\r\n    TO_CHAR(alarm_date, 'DD-MM-YYYY') AS alarm_date,\r\n    critical_alarms\r\nFROM\r\n    formatted_dates\r\nWHERE \r\n    alarm_date = ${Date:singlequote}::timestamp \r\nORDER BY\r\n    alarm_date;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Critical alarms(HH and LL alarms)per day",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT us.kks,\r\n       uar.alarm_start,\r\n       uar.duration,\r\n       uar.value as value_Avg,\r\n       uar.value_max_min,\r\n       uad.name || '> ' || uad.value || ' ' || uad.unit AS alarm\r\nFROM public.ullage_sensor us\r\nJOIN public.ullage_alarm_definition uad ON us.id = uad.sensor_id\r\nJOIN public.ullage_alarm_record uar ON uad.id = uar.alarm_definition_id\r\nwhere \r\n      uar.alarm_start between ${Date:singlequote}::timestamp and  ${Date:singlequote}::timestamp + ${Duration::raw};",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Alarm process",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ddm90ncsgt24gb"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "ddm90ncsgt24gb"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "       SELECT ds.kks,\r\n       uar.alarm_start,\r\n       uar.duration,\r\n       uar.value as value_Avg,\r\n       uar.value_max_min,\r\n       CASE\r\n           WHEN uad.name IN ('H', 'HH', 'HHH') THEN uad.name || '> ' || uad.value || ' ' || uad.unit\r\n           ELSE uad.name || '< ' || uad.value || ' ' || uad.unit\r\n      end as alarm\r\nFROM public.ullage_sensor ds\r\nJOIN public.ullage_alarm_definition uad ON ds.id = uad.sensor_id\r\nJOIN public.ullage_alarm_record uar ON uad.id = uar.alarm_definition_id\r\nwhere \r\n      uar.alarm_start between ${Date:singlequote}::timestamp and  ${Date:singlequote}::timestamp + ${Duration::raw};\r\n\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Alarm process duplicate",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "2024/02/01",
+          "value": "2024/02/01"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "ddm90ncsgt24gb"
+        },
+        "definition": "select to_char(timestamp, 'YYYY/MM/DD') from ullage_operation order by 1",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "Date",
+        "options": [],
+        "query": "select to_char(timestamp, 'YYYY/MM/DD') from ullage_operation order by 1",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "2024/02/02",
+          "value": "2024/02/02"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "ddm90ncsgt24gb"
+        },
+        "definition": "select to_char((${Date:singlequote}::timestamp + '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "next_day",
+        "options": [],
+        "query": "select to_char((${Date:singlequote}::timestamp + '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "2024/01/31",
+          "value": "2024/01/31"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "ddm90ncsgt24gb"
+        },
+        "definition": "select to_char((${Date:singlequote}::timestamp - '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "previous_day",
+        "options": [],
+        "query": "select to_char((${Date:singlequote}::timestamp - '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "'18 HOUR'",
+          "value": "'18 HOUR'"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "Duration",
+        "options": [
+          {
+            "selected": true,
+            "text": "'18 HOUR'",
+            "value": "'18 HOUR'"
+          }
+        ],
+        "query": "'18 HOUR'",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timeRangeUpdatedDuringEditOrView": false,
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "browser",
+  "title": "ullage",
+  "uid": "admaip8o6d1q8d",
+  "version": 27,
+  "weekStart": ""
+}

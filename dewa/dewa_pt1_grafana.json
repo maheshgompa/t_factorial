@@ -1,0 +1,1210 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 16,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Previous day",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/admaip8o6d1q81/dewa-pt1?orgId=1var-Date=$previous_day"
+    },
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Next day",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/admaip8o6d1q81/dewa-pt1?var-Date=$next_day"
+    },
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Home",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/admaip8o6d1q81/dewa-pt1?orgId=1"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    o.timestamp,\r\n    o.\"12wta07aa201\",\r\n    o.\"12wta07aa202\",\r\n    o.\"12wta07aa203\",\r\n    o.\"12wta07aa204\",\r\n    r.value AS \"12wtu10cl903\"\r\nFROM\r\n    (\r\n        SELECT\r\n            \"timestamp\",\r\n            \"12wta07aa201\",\r\n            \"12wta07aa202\",\r\n            \"12wta07aa203\",\r\n            \"12wta07aa204\"\r\n        FROM\r\n            dewa_operation\r\n    ) AS o\r\nLEFT JOIN\r\n    (\r\n        SELECT\r\n            \"timestamp\",\r\n            value\r\n        FROM\r\n            dewa_raw_measurement\r\n        WHERE\r\n            sensor_id = 2\r\n    ) AS r\r\nON o.timestamp = r.\"timestamp\"\r\nWHERE\r\n    o.timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nORDER BY\r\n    o.\"timestamp\";",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    t1.\"timestamp\",\r\n    t1.value AS \"12wtu01cp901\",\r\n    t2.value AS \"12wtu20cl903\"\r\nFROM\r\n    (\r\n        SELECT \"timestamp\",  value\r\n        FROM dewa_raw_measurement\r\n        WHERE sensor_id = 1\r\n       \r\n    ) AS t1\r\nLEFT JOIN\r\n    (\r\n        SELECT \"timestamp\",  value\r\n        FROM dewa_raw_measurement\r\n        WHERE sensor_id = 3\r\n       \r\n    ) AS t2\r\nON t1.\"timestamp\" = t2.\"timestamp\"\r\n-- where SUBSTRING(t1.timestamp::text, 1, 10) IN ( $Date )\r\nwhere \r\n    t1.timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\n\r\nORDER BY t1.\"timestamp\";",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "dewa_operation_time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 3,
+          "mappings": [],
+          "max": 24,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.6,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "text": {
+          "valueSize": 14
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH on_off_times AS (\r\n    SELECT\r\n        timestamp,\r\n        operation,\r\n        LAG(timestamp) OVER (ORDER BY timestamp) AS prev_timestamp,\r\n        LAG(operation) OVER (ORDER BY timestamp) AS prev_operation,\r\n        DATE_TRUNC('day', timestamp) AS day_timestamp -- Truncate timestamp to day level\r\n    FROM dewa_operation\r\n    WHERE operation IN ('ON', 'OFF') -- Assuming 'ON' and 'OFF' are valid operation values\r\n\r\n)\r\nSELECT\r\n     TO_CHAR(day_timestamp::date, 'DD-MM-YYYY') AS day, -- Format date as '01-02-2024'\r\n\tsum(case when TO_CHAR(timestamp::date, 'DD-MM-YYYY') =TO_CHAR(prev_timestamp::date, 'DD-MM-YYYY') then (EXTRACT(EPOCH FROM (timestamp - prev_timestamp)))/3600\r\n\telse 0\r\n\tend) as duration\r\n\t\r\n--     (EXTRACT(EPOCH FROM (timestamp - prev_timestamp)))/3600 AS duration -- Convert seconds to hours\r\nFROM on_off_times\r\nWHERE operation = 'ON'  -- Considering only 'ON' operation values\r\n-- and ((EXTRACT(EPOCH FROM (timestamp - prev_timestamp)))/3600)>1\r\n      AND timestamp >= '$Date'::date - INTERVAL '30 days' -- Last 30 days filter\r\n      AND timestamp <= '$Date'::date + INTERVAL '1 days'-- Reference date filter\r\nGROUP BY day_timestamp::date\r\nORDER BY day_timestamp::date;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "A bar trend with the last 30 days of ullage_operation ON",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "oper"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 1,
+                        "text": "OFF"
+                      },
+                      "1": {
+                        "color": "light-green",
+                        "index": 0,
+                        "text": "ON"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    timestamp, \r\n    \"12wta07aa201\",\r\n    \"12wta07aa202\",\r\n    \"12wta07aa203\",\r\n    \"12wta07aa204\",\r\n    \"12wtu01cp901\",\r\n case when operation = 'ON' then 1 else 0 end as Oper\r\nFROM dewa_operation\r\nwhere \r\n    timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nORDER BY timestamp;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\",\r\n       MAX(CASE WHEN sensor_id = 13 THEN value END) AS \"12wtu01ct001\",\r\n       MAX(CASE WHEN sensor_id = 14 THEN value END) AS \"12wtu02ct001\",\r\n       MAX(CASE WHEN sensor_id = 15 THEN value END) AS \"12wtu37ct901\",\r\n       MAX(CASE WHEN sensor_id = 16 THEN value END) AS \"12wtu10ct001\",\r\n       MAX(CASE WHEN sensor_id = 17 THEN value END) AS \"12wtu20ct001\"\r\nFROM dewa_raw_measurement\r\nWHERE sensor_id IN (13, 14, 15, 16, 17) AND  \r\n       timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nGROUP BY \"timestamp\"\r\nORDER BY \"timestamp\";",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Temperature follow up",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "oper"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "index": 1,
+                        "text": "OFF"
+                      },
+                      "1": {
+                        "color": "light-green",
+                        "index": 0,
+                        "text": "ON"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    timestamp, \r\n    \"12wta07aa201\",\r\n    \"12wta07aa202\",\r\n    \"12wta07aa203\",\r\n    \"12wta07aa204\",\r\n    \"12wtu01cp901\",\r\n case when operation = 'ON' then 1 else 0 end as Oper\r\n \r\nFROM dewa_operation\r\nwhere \r\n    timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\nORDER BY timestamp;\r\n\r\n\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "\r\nSELECT \"timestamp\", value as \"12wtu25cq001\" \r\nFROM \r\n    dewa_raw_measurement \r\nWHERE \r\n      sensor_id =5 AND \r\n      timestamp between ${Date:singlequote}::timestamp and ${Date:singlequote}::timestamp + ${Duration::raw}\r\norder by \r\n    timestamp",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "VOC values",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "date_1",
+        "xTickLabelRotation": -45,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH Recovered_mass_17 AS (\r\n    WITH A1 AS (\r\n    SELECT timestamp, value AS value_A1\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 16 ---12WTU19CP001 \r\n),\r\nA2 AS (\r\n    SELECT timestamp, value AS value_A2\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 17 ---12WTU17CP002\r\n),\r\nA3 AS (\r\n    SELECT timestamp, value AS value_A3\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 11 ---12WTU10CT001\r\n),\r\nA4 AS (\r\n    SELECT timestamp, value AS value_A4\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 15 ---12WBU17AP001XB01 \r\n    AND value = 1\r\n),\r\nDensity AS (\r\n    SELECT\r\n        timestamp,\r\n        (1065.05375654492 - 0.595426707667444 * A3.value_A3 - 0.000893338489101383 * (A3.value_A3 * A3.value_A3)) AS htf_density\r\n    FROM A3\r\n),\r\nH_values AS (\r\n    SELECT\r\n        A1.timestamp,\r\n        ((A1.value_A1 - A2.value_A2) * 10000) / D.htf_density AS H\r\n    FROM A1\r\n    INNER JOIN A2 ON A2.timestamp = A1.timestamp\r\n    INNER JOIN Density D ON D.timestamp = A1.timestamp\r\n),\r\nFlow AS (\r\n    SELECT\r\n        timestamp,\r\n        (-0.0001 * POWER(H, 4) + 0.0449 * POWER(H, 3) - 6.5986 * POWER(H, 2) + 430.08 * H - 10475) AS flow_value\r\n    FROM H_values\r\n),\r\nRecovered_mass AS (\r\n    SELECT\r\n        A4.timestamp,\r\n        F.flow_value * A4.value_A4 * D.htf_density * 10 / 3600 AS \"Recovered_mass_ton\"\r\n    FROM A4\r\n    INNER JOIN Flow F ON F.timestamp = A4.timestamp\r\n    INNER JOIN Density D ON D.timestamp = A4.timestamp\r\n)\r\nSELECT\r\n    TO_CHAR(timestamp::date, 'YYYY-MM-DD') AS date_1,\r\n    SUM(\"Recovered_mass_ton\") AS cumulative_recovered_mass_ton\r\nFROM\r\n    Recovered_mass\r\nGROUP BY\r\n    timestamp::date\r\nORDER BY\r\n    timestamp::date\r\n),\r\nRecovered_mass_18 AS (\r\nWITH B1 AS (\r\n    SELECT timestamp, value AS value_B1\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 19 ---12WTU21CP001 \r\n),\r\nB2 AS (\r\n    SELECT timestamp, value AS value_B2\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 20 ---12WTU18CP002\r\n),\r\nB3 AS (\r\n    SELECT timestamp, value AS value_B3\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 11 ---12WTU10CT001\r\n),\r\nB4 AS (\r\n    SELECT timestamp, value AS value_B4\r\n    FROM dewa_raw_measurement\r\n    WHERE sensor_id = 18 ---12WBU17AP001XB01 \r\n    AND value = 1\r\n),\r\nDensity AS (\r\n    SELECT\r\n        timestamp,\r\n        (1065.05375654492 - 0.595426707667444 * B3.value_B3 - 0.000893338489101383 * (B3.value_B3 * B3.value_B3)) AS htf_density\r\n    FROM B3\r\n),\r\nH_values AS (\r\n    SELECT\r\n        B1.timestamp,\r\n        ((B1.value_B1 - B2.value_B2) * 10000) / D.htf_density AS H\r\n    FROM B1\r\n    INNER JOIN B2 ON B2.timestamp = B1.timestamp\r\n    INNER JOIN Density D ON D.timestamp = B1.timestamp\r\n),\r\nFlow AS (\r\n    SELECT\r\n        timestamp,\r\n        (-0.0001 * POWER(H, 4) + 0.0449 * POWER(H, 3) - 6.5986 * POWER(H, 2) + 430.08 * H - 10475) AS flow_value\r\n    FROM H_values\r\n),\r\nRecovered_mass AS (\r\n    SELECT\r\n        B4.timestamp,\r\n        F.flow_value * B4.value_B4 * D.htf_density * 10 / 3600 AS \"Recovered_mass_ton\"\r\n    FROM B4\r\n    INNER JOIN Flow F ON F.timestamp = B4.timestamp\r\n    INNER JOIN Density D ON D.timestamp = B4.timestamp\r\n)\r\nSELECT\r\n    TO_CHAR(timestamp::date, 'YYYY-MM-DD') AS date_1,\r\n    SUM(\"Recovered_mass_ton\") AS cumulative_recovered_mass_ton\r\nFROM\r\n    Recovered_mass\r\nGROUP BY\r\n    timestamp::date\r\nORDER BY\r\n    timestamp::date\r\n),\r\nCombinedRecoveredMass AS (\r\n    SELECT\r\n        COALESCE(RM17.date_1::date, RM18.date_1::date) AS date_1,\r\n        COALESCE(RM17.cumulative_recovered_mass_ton, 0) + COALESCE(RM18.cumulative_recovered_mass_ton, 0) AS combined_recovered_mass_ton\r\n    FROM Recovered_mass_17 RM17\r\n    FULL OUTER JOIN Recovered_mass_18 RM18 ON RM18.date_1 = RM17.date_1\r\n)\r\n\r\nSELECT\r\n    date_1::date as date_1,\r\n    combined_recovered_mass_ton\r\nFROM\r\n    CombinedRecoveredMass\r\nWHERE\r\n\r\n-- timestamp >= '$Date'::date - INTERVAL '60 days' -- Last 30 days filter\r\n--       AND timestamp <= '$Date'::date + INTERVAL '1 days'-- Reference date filter\r\n\r\n\r\n    date_1::date >= '$Date'::date - INTERVAL '60 days' -- Last 60 days filter\r\n    AND date_1::date <= '$Date'::date -- Reference date filter\r\nORDER BY\r\n    date_1::date;\r\n\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "HTF Recovered mass",
+      "transformations": [
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "dateFormat": "YYYY/MM/DD",
+                "destinationType": "string",
+                "enumConfig": {
+                  "text": [
+                    1706745600000,
+                    1706832000000,
+                    1706918400000,
+                    1707004800000,
+                    1707091200000,
+                    1707177600000,
+                    1707264000000,
+                    1707350400000,
+                    1707436800000,
+                    1707523200000,
+                    1707609600000,
+                    1707696000000,
+                    1707782400000,
+                    1707868800000,
+                    1707955200000,
+                    1708041600000,
+                    1708128000000,
+                    1708214400000,
+                    1708300800000,
+                    1708387200000
+                  ]
+                },
+                "targetField": "date_1"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-green",
+            "mode": "shades"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH formatted_dates AS (\r\n    SELECT\r\n        DATE(alarm_start) AS alarm_date,\r\n        COUNT(*) AS total_alarms\r\n        -- SUM(CASE WHEN dad.name IN ('HH', 'LL') THEN 1 ELSE 0 END) AS critical_alarms\r\n    FROM\r\n        dewa_alarm_record dar\r\n    JOIN\r\n        dewa_alarm_definition dad ON dar.alarm_definition_id = dad.id\r\n    GROUP BY\r\n        DATE(alarm_start)\r\n)\r\nSELECT\r\n    TO_CHAR(alarm_date, 'YYYY/MM/DD') AS alarm_date,\r\n    total_alarms\r\nFROM\r\n    formatted_dates\r\nWHERE\r\n    alarm_date = ${Date:singlequote}::timestamp \r\nORDER BY\r\n    alarm_date;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Total alarms per day",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-green",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 26
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH ranked_high AS (\r\n    SELECT \r\n        id, \r\n        definition_valid_from, \r\n        definition_valid_to, \r\n        name, \r\n        unit, \r\n        value, \r\n        sensor_id, \r\n        order1, \r\n        is_high_alarm,\r\n        ROW_NUMBER() OVER (PARTITION BY sensor_id ORDER BY value DESC) AS rnk_high\r\n    FROM \r\n        dewa_alarm_definition\r\n    WHERE \r\n        name IN ('H', 'HH', 'HHH')\r\n),\r\nranked_low AS (\r\n    SELECT \r\n        id, \r\n        definition_valid_from, \r\n        definition_valid_to, \r\n        name, \r\n        unit, \r\n        value, \r\n        sensor_id, \r\n        order1, \r\n        is_high_alarm,\r\n        ROW_NUMBER() OVER (PARTITION BY sensor_id ORDER BY value ASC) AS rnk_low\r\n    FROM \r\n        dewa_alarm_definition\r\n    WHERE \r\n        name IN ('L', 'LL', 'LLL')\r\n),\r\ncombined_alarms AS (\r\n    SELECT \r\n        definition_valid_from, \r\n        name, \r\n        value, \r\n        sensor_id\r\n    FROM \r\n        ranked_high\r\n    WHERE \r\n        rnk_high = 1\r\n\r\n    UNION ALL\r\n\r\n    SELECT \r\n        definition_valid_from, \r\n        name, \r\n        value, \r\n        sensor_id\r\n    FROM \r\n        ranked_low\r\n    WHERE \r\n        rnk_low = 1\r\n)\r\nSELECT\r\n    DATE(t2.alarm_start) AS alarm_date,\r\n    COUNT(*) AS count_per_day\r\nFROM\r\n    dewa_alarm_record t2\r\nJOIN\r\n    combined_alarms t1 ON t2.alarm_definition_id = t1.sensor_id\r\nWHERE\r\n    (t1.name IN ('H', 'HH', 'HHH') AND t2.value > t1.value) OR\r\n    (t1.name IN ('L', 'LL', 'LLL') AND t2.value < t1.value)\r\nGROUP BY\r\n    DATE(t2.alarm_start)\r\nORDER BY\r\n    alarm_date;\r\n\r\n\r\n\r\n-- (t2.alarm_start = ${Date:singlequote}::timestamp)\r\n    ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Critical alarms(HH and LL alarms)per day",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdmcdr2itvny8d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdmcdr2itvny8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "       SELECT ds.kks,\r\n       dar.alarm_start,\r\n       dar.duration,\r\n       dar.value as value_Avg,\r\n       dar.value_max_min,\r\n      --  dad.name || '> ' || dad.value  AS alarm.\r\n      CASE\r\n           WHEN dad.name IN ('H', 'HH', 'HHH') THEN dad.name || '> ' || dad.value || ' ' || dad.unit\r\n           ELSE dad.name || '< ' || dad.value || ' ' || dad.unit\r\n      end as alarm\r\nFROM public.dewa_sensor ds\r\nJOIN public.dewa_alarm_definition dad ON ds.id = dad.sensor_id\r\nJOIN public.dewa_alarm_record dar ON dad.id = dar.alarm_definition_id\r\nwhere \r\n      dar.alarm_start between ${Date:singlequote}::timestamp and  ${Date:singlequote}::timestamp + ${Duration::raw};\r\n\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Panel Title",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "2024/02/20",
+          "value": "2024/02/20"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "cdmcdr2itvny8d"
+        },
+        "definition": "select to_char(timestamp, 'YYYY/MM/DD') from dewa_operation order by 1",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "Date",
+        "options": [],
+        "query": "select to_char(timestamp, 'YYYY/MM/DD') from dewa_operation order by 1",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "2024/02/21",
+          "value": "2024/02/21"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "cdmcdr2itvny8d"
+        },
+        "definition": "select to_char((${Date:singlequote}::timestamp + '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "next_day",
+        "options": [],
+        "query": "select to_char((${Date:singlequote}::timestamp + '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "2024/02/19",
+          "value": "2024/02/19"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "cdmcdr2itvny8d"
+        },
+        "definition": "select to_char((${Date:singlequote}::timestamp - '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "previous_day",
+        "options": [],
+        "query": "select to_char((${Date:singlequote}::timestamp - '1 Day'::interval), 'YYYY/MM/DD')\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "'18 HOUR'",
+          "value": "'18 HOUR'"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "Duration",
+        "options": [
+          {
+            "selected": true,
+            "text": "'18 HOUR'",
+            "value": "'18 HOUR'"
+          }
+        ],
+        "query": "'18 HOUR'",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "2024-02-01T08:00:00.000Z",
+    "to": "2024-02-01T17:59:50.000Z"
+  },
+  "timeRangeUpdatedDuringEditOrView": false,
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "browser",
+  "title": "dewa_pt1",
+  "uid": "admaip8o6d1q81",
+  "version": 16,
+  "weekStart": ""
+}

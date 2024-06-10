@@ -1,0 +1,21 @@
+The module code is in the bin folder.
+
+To run the demo:
+
+bin/scripts
+
+$ python launch_temperature_increase_shortfall.py process 2024-02-11
+
+Feel free to create a python virtual enviroment to hold all requirements listed in the requirements.txt file.
+
+Before you must create two databases in your local postgres cluster: nomac_dewa_pt1_tf and nomac_dewa_pt1_raw_tf.
+
+In the folder database_dump you can find both dumps for these databases. This time we provided a SQL version with the INSERT query to load the data. We hope this time you will not have any issue to restore the databases.
+
+You must set the correct conection parameters in the bin/config/config.py file.
+
+The goal is to run the launch_temperature_increase_shortfall.py and learn how the code is working. 
+
+
+In the file grafana_dashboard.json you can find the json to recreate the dashboard you have to build with the module generated data.
+
